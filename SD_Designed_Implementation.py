@@ -7,7 +7,7 @@ import numpy as np
 
 seq, fe = librosa.load('Shetty_and_Kobe.wav');
 longeur_signal=len(seq)
-seq_list=[piece for piece in seq]
+seq=[piece for piece in seq]
 
 def sections(seq , fe, pas=0.5 ):
     longeur_pas=int(pas*fe);
@@ -58,8 +58,19 @@ def step_to_clusters(sequence,silent_speech,fe,pas=0.5):
             counter+=1
     return intervals,intervalsData
 
-parole_ou_non=sections(seq,fe);
+def MFCC_Emphasis(valuable_data):
+    emphasised=list()
+    for i in valuable_data:
+        mfcc=librosa.feature.mfcc(y=np.array(valuable_data[i] ) , sr=fe)
+        print( list( np.array(mfcc)[0]) )
+        emphasised.append( np.array(mfcc)[0] )
+    print(len(emphasised))
 
+parole_ou_non=sections(seq,fe);
+intervals,valuable_data=step_to_clusters(seq_list,parole_ou_non,fe,pas=0.5)
+print(len(valuable_data))
+MFCC_Emphasis(valuable_data)
+print_speech_info(parole_ou_non)
 
 """
 speech=numpy.array(reconstituer(seq,parole_ou_non))
@@ -73,12 +84,7 @@ librosa.display.waveplot(speech,fe)
 
 
 """
-intervals,valuable_data=step_to_clusters(seq_list,parole_ou_non,fe,pas=0.5)
-for i in valuable_data:
-    mfcc=librosa.feature.mfcc(y=np.array(valuable_data[i] ) , sr=fe)
-    print(mfcc.shape)
-    print(np.array(mfcc))
-    #print([float("{:.2f}".format(x)) for x in np.array(mfcc)])
+
 """
     plt.figure(figsize=(10, 4))
     librosa.display.specshow(mfcc, x_axis='time')
@@ -87,5 +93,3 @@ for i in valuable_data:
     plt.tight_layout()
     plt.show()
 """
-
-print_speech_info(parole_ou_non)
